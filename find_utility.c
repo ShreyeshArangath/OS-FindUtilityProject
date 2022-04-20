@@ -20,6 +20,8 @@
 #include <sys/stat.h>
 #include <dirent.h>
 #include <string.h>
+#include <time.h>
+
 
 #define TRUE 1
 #define FALSE 0
@@ -27,33 +29,31 @@
 #define PARENT_DIRECTORY ".."
 #define SLASH "/"
 
-void read_sub(char *sub_dir)
+void find_functionality_1(char *where)
 {
-	DIR *sub_dp = opendir(sub_dir);
+	DIR *sub_dp = opendir(where);
 	struct dirent *sub_dirp;
 	if (sub_dp != NULL)
 	{
 		while ((sub_dirp = readdir(sub_dp)) != NULL)
 		{
-			//if(stat(sub_dirp->d_name,&buf)==0)
-			//printf("%d ", (int)buf.st_size);
 			char *cur_dir_name = sub_dirp->d_name;
 
-			if (strcmp(cur_dir_name, CURRENT_DIRECTORY) != 0 && strcmp(cur_dir_name, PARENT_DIRECTORY) != 0) //recurcively loop into the sub-directory
+			if (strcmp(cur_dir_name, CURRENT_DIRECTORY) != 0 && strcmp(cur_dir_name, PARENT_DIRECTORY) != 0)
 			{
-				printf("%s/%s\n", sub_dir, cur_dir_name);
-				char temp3[] = "/";
-                char *temp_sub = temp3;
-                temp_sub = strcat(temp_sub, cur_dir_name);
-                char *temp_full_path = malloc(sizeof(char) * 2000);
-                temp_full_path = strcpy(temp_full_path, sub_dir);
-                strcat(temp_full_path, temp_sub);
-                DIR *subsubdp = opendir(temp_full_path);
-                if (subsubdp != NULL)
-                {
-                    closedir(subsubdp);
-                    read_sub(temp_full_path);
-                }
+				printf("%s/%s\n", where, cur_dir_name);
+				char temp3[] = SLASH;
+				char *temp_sub = temp3;
+				temp_sub = strcat(temp_sub, cur_dir_name);
+				char *temp_full_path = malloc(sizeof(char) * 2000);
+				temp_full_path = strcpy(temp_full_path, where);
+				strcat(temp_full_path, temp_sub);
+				DIR *subsubdp = opendir(temp_full_path);
+				if (subsubdp != NULL)
+				{
+					closedir(subsubdp);
+					find_functionality_1(temp_full_path);
+				}
 			}
 		}
 		closedir(sub_dp);
@@ -65,22 +65,176 @@ void read_sub(char *sub_dir)
 	}
 }
 
-void find(char *where, char *name, char *action)
+void find_functionality_2_1(char *where, char *name, int delete_flag)
 {
-	/* Test arguments parsed. */
-	printf("find %s %s %s\n", where, name, action);
-	read_sub(where);
+	DIR *sub_dp = opendir(where);
+	struct dirent *sub_dirp;
+	if (sub_dp != NULL)
+	{
+		while ((sub_dirp = readdir(sub_dp)) != NULL)
+		{
+			char *cur_dir_name = sub_dirp->d_name;
+			if (strcmp(cur_dir_name, CURRENT_DIRECTORY) != 0 && strcmp(cur_dir_name, PARENT_DIRECTORY) != 0)
+			{
+				char *dir_path = malloc(sizeof(char) * 2000);
+				strcpy(dir_path, where);
+				strcat(dir_path, SLASH);
+				strcat(dir_path, cur_dir_name);
+
+				if (strcmp(cur_dir_name, name) == 0)
+				{
+					printf("%s\n", dir_path);
+					if (delete_flag) remove(dir_path); 
+				}
+				char temp3[] = SLASH;
+				char *temp_sub = temp3;
+				temp_sub = strcat(temp_sub, cur_dir_name);
+				char *temp_full_path = malloc(sizeof(char) * 2000);
+				temp_full_path = strcpy(temp_full_path, where);
+				strcat(temp_full_path, temp_sub);
+				DIR *subsubdp = opendir(temp_full_path);
+				if (subsubdp != NULL)
+				{
+					closedir(subsubdp);
+					find_functionality_2_1(temp_full_path, name, delete_flag);
+				}
+			}
+		}
+		closedir(sub_dp);
+	}
+	else
+	{
+		printf("cannot open directory\n");
+		exit(2);
+	}
 }
 
+void find_functionality_2_2(char *where, int mmin, int op, int delete_flag)
+{
+	DIR *sub_dp = opendir(where);
+	struct stat buf;
+	struct dirent *sub_dirp;
+	if (sub_dp != NULL)
+	{
+		while ((sub_dirp = readdir(sub_dp)) != NULL)
+		{
+			char *cur_dir_name = sub_dirp->d_name;
+			if (strcmp(cur_dir_name, CURRENT_DIRECTORY) != 0 && strcmp(cur_dir_name, PARENT_DIRECTORY) != 0)
+			{
+				char *dir_path = malloc(sizeof(char) * 2000);
+				strcpy(dir_path, where);
+				strcat(dir_path, SLASH);
+				strcat(dir_path, cur_dir_name);
+
+				if (stat(dir_path, &buf) == 0)
+				{
+					long int t = (long int)(time(NULL) - buf.st_mtime);
+
+					t = t / 60;
+					switch (op)
+					{
+					case '>':
+						if (t > mmin)
+							printf("%s\n", dir_path);
+							if (delete_flag) remove(dir_path); 
+						break;
+					case '<':
+						if (t < mmin)
+							printf("%s\n", dir_path);
+							if (delete_flag) remove(dir_path); 
+						break;
+					default:
+						if (t == mmin)
+							printf("%s\n", dir_path);
+							if (delete_flag) remove(dir_path); 
+						break;
+					}
+				}
+				char temp3[] = SLASH;
+				char *temp_sub = temp3;
+				temp_sub = strcat(temp_sub, cur_dir_name);
+				char *temp_full_path = malloc(sizeof(char) * 2000);
+				temp_full_path = strcpy(temp_full_path, where);
+				strcat(temp_full_path, temp_sub);
+				DIR *subsubdp = opendir(temp_full_path);
+				if (subsubdp != NULL)
+				{
+					closedir(subsubdp);
+					find_functionality_2_2(temp_full_path, mmin, op, delete_flag);
+				}
+			}
+		}
+		closedir(sub_dp);
+	}
+	else
+	{
+		printf("cannot open directory\n");
+		exit(2);
+	}
+}
+
+void find_functionality_2_3(char *where, int inode, int delete_flag)
+{
+	DIR *sub_dp = opendir(where);
+	struct dirent *sub_dirp;
+	struct stat buf;
+	if (sub_dp != NULL)
+	{
+		while ((sub_dirp = readdir(sub_dp)) != NULL)
+		{
+			char *cur_dir_name = sub_dirp->d_name;
+			if (strcmp(cur_dir_name, CURRENT_DIRECTORY) != 0 && strcmp(cur_dir_name, PARENT_DIRECTORY) != 0)
+			{
+				char *dir_path = malloc(sizeof(char) * 2000);
+				strcpy(dir_path, where);
+				strcat(dir_path, SLASH);
+				strcat(dir_path, cur_dir_name);
+
+				if (stat(dir_path, &buf) == 0)
+				{
+					int t = buf.st_ino;
+					if (t == inode)
+					{
+						printf("%s\n", dir_path);
+						if (delete_flag) remove(dir_path); 
+					}
+				}
+
+				char temp3[] = SLASH;
+				char *temp_sub = temp3;
+				temp_sub = strcat(temp_sub, cur_dir_name);
+				char *temp_full_path = malloc(sizeof(char) * 2000);
+				temp_full_path = strcpy(temp_full_path, where);
+				strcat(temp_full_path, temp_sub);
+				DIR *subsubdp = opendir(temp_full_path);
+				if (subsubdp != NULL)
+				{
+					closedir(subsubdp);
+					find_functionality_2_3(temp_full_path, inode, delete_flag);
+				}
+			}
+		}
+		closedir(sub_dp);
+	}
+	else
+	{
+		printf("cannot open directory\n");
+		exit(2);
+	}
+}
 int main(int argc, char **argv)
 {
-	int w, n, m, i, a;
+	int w = 0;
+	int n = 0;
+	int m = 0;
+	int i = 0;
+	int a = 0;
 	char *where, *name, *mmin, *inum, *action;
 	while (TRUE)
 	{
-		// TODO: Make it work when -w is not specified 
+		// TODO: Make it work when -w is not specified
 		char c;
-		c = getopt(argc, argv, "w:n:m:i:a:");
+		c = getopt(argc, argv, "w:n:m:i:a");
 		if (c == -1)
 			break;
 		switch (c)
@@ -110,14 +264,49 @@ int main(int argc, char **argv)
 			action = optarg;
 			printf("action: %s\n", optarg);
 			break;
+		case 1:
+			printf("Non-optional arg: %s \n", optarg);
+			break;
 		case '?':
 		default:
 			printf("An invalid option detected.\n");
 		}
 	}
 
-	if (a == 1 || w == 1 || n == 1)
-		find(where, name, action);
+	if (w == 1)
+	{
+		if (n == 0 && i == 0 && m == 0)
+			find_functionality_1(where);
+		else if (n == 1)
+			find_functionality_2_1(where, name, a);
+		else if (m == 1)
+		{
+			char op;
+			int mins = 0;
+			if (mmin != NULL && mmin[0] != '\0')
+			{
+				char firstChar = mmin[0];
+				switch (firstChar)
+				{
+				case '+':
+					op = '>';
+					break;
+				case '-':
+					op = '<';
+					break;
+				default:
+					op = '=';
+				}
+				mins = abs(atoi(mmin));
+			}
+			find_functionality_2_2(where, mins, op, a);
+		}
+		else if (i == 1)
+		{
+			int inode = atoi(inum);
+			find_functionality_2_3(where, inode, a);
+		}
+	}
 
 	argc -= optind;
 	argv += optind;
