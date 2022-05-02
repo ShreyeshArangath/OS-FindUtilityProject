@@ -1,18 +1,3 @@
-/*
- * This program provides an example of how to parse arguments using getopt().
- * This program can be integrated into your 2nd programming project about the
- * find utility to parse multiple arguments. Note that this example uses a
- * short option for command-line arguments, e.g. -n instead of -name, -m
- * instead of -mmin, and this is acceptable in your program too.
- * 
- * Compile this code: gcc -o getopt-example getopt-example.c
- * 
- * Sample run: 
- * $./getopt-example -w Document -n foo -a delete 
- * $./getopt-example -w Document -n myfile -a delete 
- * $./getopt-example -w Document -m -10
- */
-
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -28,9 +13,12 @@
 #define CURRENT_DIRECTORY "."
 #define PARENT_DIRECTORY ".."
 #define SLASH "/"
+#define SIZE 2000
 
+// 1. find where-to-look
 void find_functionality_1(char *where)
 {
+
 	DIR *sub_dp = opendir(where);
 	struct dirent *sub_dirp;
 	if (sub_dp != NULL)
@@ -39,24 +27,28 @@ void find_functionality_1(char *where)
 		{
 			char *cur_dir_name = sub_dirp->d_name;
 
+			//recurcively loop into the sub-directory
 			if (strcmp(cur_dir_name, CURRENT_DIRECTORY) != 0 && strcmp(cur_dir_name, PARENT_DIRECTORY) != 0)
 			{
-				printf("%s/%s\n", where, cur_dir_name);
+				printf("%s/%s\n", where, cur_dir_name); // Print out the full path starting from the where location to the cur_dir_name
+				
 				char temp3[] = SLASH;
-				char *temp_sub = temp3;
+				char *temp_sub = (char *)malloc(SIZE *sizeof(char));
+				strcpy(temp_sub, temp3);
 				temp_sub = strcat(temp_sub, cur_dir_name);
-				char *temp_full_path = malloc(sizeof(char) * 2000);
-				temp_full_path = strcpy(temp_full_path, where);
+				char *temp_full_path = malloc(sizeof(char) * SIZE);
+				strcpy(temp_full_path, where);
 				strcat(temp_full_path, temp_sub);
 				DIR *subsubdp = opendir(temp_full_path);
+				
 				if (subsubdp != NULL)
 				{
 					closedir(subsubdp);
-					find_functionality_1(temp_full_path);
+					find_functionality_1(temp_full_path);	// Recursive call with the new temp full path 
 				}
 			}
 		}
-		closedir(sub_dp);
+		closedir(sub_dp);  // Close the directory 
 	}
 	else
 	{
@@ -65,6 +57,7 @@ void find_functionality_1(char *where)
 	}
 }
 
+// 2.1 find where-to-look -name <specified name>
 void find_functionality_2_1(char *where, char *name, int delete_flag)
 {
 	DIR *sub_dp = opendir(where);
@@ -74,29 +67,31 @@ void find_functionality_2_1(char *where, char *name, int delete_flag)
 		while ((sub_dirp = readdir(sub_dp)) != NULL)
 		{
 			char *cur_dir_name = sub_dirp->d_name;
+
+			//recurcively loop into the sub-directory
 			if (strcmp(cur_dir_name, CURRENT_DIRECTORY) != 0 && strcmp(cur_dir_name, PARENT_DIRECTORY) != 0)
 			{
-				char *dir_path = malloc(sizeof(char) * 2000);
+				char *dir_path = malloc(sizeof(char) * SIZE);
 				strcpy(dir_path, where);
 				strcat(dir_path, SLASH);
 				strcat(dir_path, cur_dir_name);
 
-				if (strcmp(cur_dir_name, name) == 0)
+				if (strcmp(cur_dir_name, name) == 0) //If the cur_dir_name is the same as the name specified then print
 				{
 					printf("%s\n", dir_path);
-					if (delete_flag) remove(dir_path); 
+					if (delete_flag) remove(dir_path); // If the delete flag is turned on then remove it 
 				}
 				char temp3[] = SLASH;
 				char *temp_sub = temp3;
 				temp_sub = strcat(temp_sub, cur_dir_name);
-				char *temp_full_path = malloc(sizeof(char) * 2000);
+				char *temp_full_path = malloc(sizeof(char) * SIZE);
 				temp_full_path = strcpy(temp_full_path, where);
 				strcat(temp_full_path, temp_sub);
 				DIR *subsubdp = opendir(temp_full_path);
 				if (subsubdp != NULL)
 				{
 					closedir(subsubdp);
-					find_functionality_2_1(temp_full_path, name, delete_flag);
+					find_functionality_2_1(temp_full_path, name, delete_flag); // recursively call with the new temp full path 
 				}
 			}
 		}
@@ -109,6 +104,7 @@ void find_functionality_2_1(char *where, char *name, int delete_flag)
 	}
 }
 
+// 2.2 find where-to-look -mmin <specified number of minutes>
 void find_functionality_2_2(char *where, int mmin, int op, int delete_flag)
 {
 	DIR *sub_dp = opendir(where);
@@ -119,18 +115,23 @@ void find_functionality_2_2(char *where, int mmin, int op, int delete_flag)
 		while ((sub_dirp = readdir(sub_dp)) != NULL)
 		{
 			char *cur_dir_name = sub_dirp->d_name;
+			//recurcively loop into the sub-directory
 			if (strcmp(cur_dir_name, CURRENT_DIRECTORY) != 0 && strcmp(cur_dir_name, PARENT_DIRECTORY) != 0)
 			{
-				char *dir_path = malloc(sizeof(char) * 2000);
+				char *dir_path = malloc(sizeof(char) * SIZE);
 				strcpy(dir_path, where);
 				strcat(dir_path, SLASH);
 				strcat(dir_path, cur_dir_name);
 
-				if (stat(dir_path, &buf) == 0)
+				if (stat(dir_path, &buf) == 0)	// If we are able to retrieve the stat of the current dir_path
 				{
 					long int t = (long int)(time(NULL) - buf.st_mtime);
 
 					t = t / 60;
+					// Switch based on the operation specified. 
+					// If +10, then >10 
+					// If -10, then <10 
+					// If 10, then ==10
 					switch (op)
 					{
 					case '>':
@@ -153,14 +154,14 @@ void find_functionality_2_2(char *where, int mmin, int op, int delete_flag)
 				char temp3[] = SLASH;
 				char *temp_sub = temp3;
 				temp_sub = strcat(temp_sub, cur_dir_name);
-				char *temp_full_path = malloc(sizeof(char) * 2000);
+				char *temp_full_path = malloc(sizeof(char) * SIZE);
 				temp_full_path = strcpy(temp_full_path, where);
 				strcat(temp_full_path, temp_sub);
 				DIR *subsubdp = opendir(temp_full_path);
 				if (subsubdp != NULL)
 				{
 					closedir(subsubdp);
-					find_functionality_2_2(temp_full_path, mmin, op, delete_flag);
+					find_functionality_2_2(temp_full_path, mmin, op, delete_flag); // recursively traverse the directory 
 				}
 			}
 		}
@@ -173,6 +174,7 @@ void find_functionality_2_2(char *where, int mmin, int op, int delete_flag)
 	}
 }
 
+// 2.3 find where-to-look -inum <specified i-node number>
 void find_functionality_2_3(char *where, int inode, int delete_flag)
 {
 	DIR *sub_dp = opendir(where);
@@ -183,17 +185,18 @@ void find_functionality_2_3(char *where, int inode, int delete_flag)
 		while ((sub_dirp = readdir(sub_dp)) != NULL)
 		{
 			char *cur_dir_name = sub_dirp->d_name;
+			//recurcively loop into the sub-directory
 			if (strcmp(cur_dir_name, CURRENT_DIRECTORY) != 0 && strcmp(cur_dir_name, PARENT_DIRECTORY) != 0)
 			{
-				char *dir_path = malloc(sizeof(char) * 2000);
+				char *dir_path = malloc(sizeof(char) * SIZE);
 				strcpy(dir_path, where);
 				strcat(dir_path, SLASH);
 				strcat(dir_path, cur_dir_name);
 
-				if (stat(dir_path, &buf) == 0)
+				if (stat(dir_path, &buf) == 0) // Retrieve the stat for the cur dir_path 
 				{
-					int t = buf.st_ino;
-					if (t == inode)
+					int t = buf.st_ino;	
+					if (t == inode)		// if the inode numbers are equal then print it, if delete flag is turned on then remove it 
 					{
 						printf("%s\n", dir_path);
 						if (delete_flag) remove(dir_path); 
@@ -203,7 +206,7 @@ void find_functionality_2_3(char *where, int inode, int delete_flag)
 				char temp3[] = SLASH;
 				char *temp_sub = temp3;
 				temp_sub = strcat(temp_sub, cur_dir_name);
-				char *temp_full_path = malloc(sizeof(char) * 2000);
+				char *temp_full_path = malloc(sizeof(char) * SIZE);
 				temp_full_path = strcpy(temp_full_path, where);
 				strcat(temp_full_path, temp_sub);
 				DIR *subsubdp = opendir(temp_full_path);
@@ -224,23 +227,23 @@ void find_functionality_2_3(char *where, int inode, int delete_flag)
 }
 int main(int argc, char **argv)
 {
-	int w = 0;
+	// Argument defintions
+	int w = 1;
 	int n = 0;
 	int m = 0;
 	int i = 0;
 	int a = 0;
 	char *where, *name, *mmin, *inum, *action;
+	where = NULL;
 	while (TRUE)
 	{
-		// TODO: Make it work when -w is not specified
 		char c;
-		c = getopt(argc, argv, "w:n:m:i:a");
+		c = getopt(argc, argv, ":w:n:m:i:a:");
 		if (c == -1)
 			break;
 		switch (c)
 		{
 		case 'w':
-			w = 1;
 			where = optarg;
 			printf("where: %s\n", optarg);
 			break;
@@ -274,11 +277,18 @@ int main(int argc, char **argv)
 	}
 
 	if (w == 1)
-	{
+	{	
+		// If not where directory is speicified then use this 
+		if (where==NULL) {
+			where = ".";
+		}
+		// If directory is specified then use 1
 		if (n == 0 && i == 0 && m == 0)
 			find_functionality_1(where);
+		// If name is specified then use 2.1 
 		else if (n == 1)
-			find_functionality_2_1(where, name, a);
+			find_functionality_2_1(where, name, a); // a is the delete flag 
+		// If mmin is specified then use 2.2 
 		else if (m == 1)
 		{
 			char op;
@@ -299,12 +309,13 @@ int main(int argc, char **argv)
 				}
 				mins = abs(atoi(mmin));
 			}
-			find_functionality_2_2(where, mins, op, a);
+			find_functionality_2_2(where, mins, op, a); // a is the delete flag 
 		}
+		// If i-node is specified then use 2.3 
 		else if (i == 1)
 		{
 			int inode = atoi(inum);
-			find_functionality_2_3(where, inode, a);
+			find_functionality_2_3(where, inode, a); // a is the delete flag 
 		}
 	}
 

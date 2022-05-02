@@ -1,0 +1,231 @@
+1. find where-to-look
+Test Case: File where to look exists
+./find_utility -w testdir
+where: testdir
+testdir/dir3
+testdir/dir3/test8
+testdir/test1
+testdir/foo
+testdir/dir1
+testdir/dir1/dir2
+testdir/dir1/dir2/test6
+testdir/dir1/dir2/foo
+testdir/dir1/dir2/test5
+testdir/dir1/foo
+testdir/dir1/test4
+testdir/dir1/test3
+testdir/test2
+
+
+Test Case: File where to look does not exist
+./find_utility -w testdir1
+where: testdir1
+cannot open directory
+
+
+Test Case: No where to look criterion is specified
+./find_utlity
+
+./find_utility.o
+./Makefile
+./find_utility
+./output
+./output/output.txt
+./find_utility.c
+./README.md
+./automate.sh
+./testdir
+./testdir/dir3
+./testdir/dir3/test8
+./testdir/test1
+./testdir/foo
+./testdir/dir1
+./testdir/dir1/dir2
+./testdir/dir1/dir2/test6
+./testdir/dir1/dir2/foo
+./testdir/dir1/dir2/test5
+./testdir/dir1/foo
+./testdir/dir1/test4
+./testdir/dir1/test3
+./testdir/test2
+./.git
+./.git/config
+./.git/objects
+./.git/objects/66
+./.git/objects/66/869bf15fc37c85f47ca45ed819d2665007e22d
+./.git/objects/68
+./.git/objects/68/6bfc9c4e25ec6392f6a43c0059d09afba1f26f
+./.git/objects/3b
+./.git/objects/3b/16ae03966c234cca515476e60fc6cc43084ed6
+./.git/objects/9b
+./.git/objects/9b/ed9c7de78c9fa925b475368cf99b453bf9a76a
+./.git/objects/9e
+./.git/objects/9e/06410ff886ef769184c69eab97b53ebface0c2
+./.git/objects/0e
+./.git/objects/0e/68f438007c99d84611519d8dbfe4796e35b3de
+./.git/objects/5a
+./.git/objects/5a/69d96986df75e9411938120504e2033f89412e
+./.git/objects/d1
+./.git/objects/d1/b5911053c968321bdb3cbbeba21b94f3446f3f
+./.git/objects/ae
+./.git/objects/ae/b144a3e011c57e2523f657715fca1fd7fa8401
+./.git/objects/c0
+./.git/objects/c0/3ad1d44fc124705873c7ca7a2216a3376d2cbd
+./.git/objects/f2
+./.git/objects/f2/7fbfb22d6b789ba99fa8e7179a646aeb97b843
+./.git/objects/e3
+./.git/objects/e3/8565f5793dda5ed5fbd45ce0ddc5374382e266
+./.git/objects/ca
+./.git/objects/ca/97643b930e82f4c26bd1cb5291f1c57548fa98
+./.git/objects/pack
+./.git/objects/7d
+./.git/objects/7d/273f348107cee0ed68bc4aaac4bbb4d0c5f544
+./.git/objects/42
+./.git/objects/42/17d5b760e0cf2796bfbeaee437698f08e793dc
+./.git/objects/8a
+./.git/objects/8a/596854e74ecc16dfcd7200c06e40cadc81f32d
+./.git/objects/6e
+./.git/objects/6e/e48c4494c5e545311fbd7a70bb6bee1ad67069
+./.git/objects/info
+./.git/objects/91
+./.git/objects/91/280e852f91fed287e15ec0805ee0b0d2110795
+./.git/objects/0a
+./.git/objects/0a/1907737e73a34d39e5d88cf0fbede278a088b5
+./.git/objects/dd
+./.git/objects/dd/20a22b5a0edd44c4b1e8cb62ff534289d40ef6
+./.git/objects/a9
+./.git/objects/a9/cf46ecc55007361eea2083b058c51c86346f87
+./.git/objects/e6
+./.git/objects/e6/9de29bb2d1d6434b8b29ae775ad8c2e48c5391
+./.git/objects/c5
+./.git/objects/c5/0bd9fcd922e22d45d5729c74df292fb7f4b911
+./.git/objects/46
+./.git/objects/46/f04a56d626f6c5e837546eb4f00349ee4d138b
+./.git/objects/2d
+./.git/objects/2d/77e421e1af27887c0e6c219104282966679a8b
+./.git/objects/1d
+./.git/objects/1d/56a197f5b7af471815d2f7e9d7cbdf41bfd1c6
+./.git/objects/76
+./.git/objects/76/15fdac1a7438dbe3d2c7394b730bbe5708eda8
+./.git/objects/49
+./.git/objects/49/1f72f7be7f43c5be4959976583fab259c0b4d5
+./.git/objects/2e
+./.git/objects/2e/3c092bb2ddfc3aaaa1e8e22cd0eebdecf1e759
+./.git/objects/7a
+./.git/objects/7a/a98cb192a673ac406c3c069681585e4f1a56fb
+./.git/HEAD
+./.git/info
+./.git/info/exclude
+./.git/logs
+./.git/logs/HEAD
+./.git/logs/refs
+./.git/logs/refs/heads
+./.git/logs/refs/heads/main
+./.git/logs/refs/remotes
+./.git/logs/refs/remotes/origin
+./.git/logs/refs/remotes/origin/main
+./.git/description
+./.git/hooks
+./.git/hooks/commit-msg.sample
+./.git/hooks/pre-rebase.sample
+./.git/hooks/pre-commit.sample
+./.git/hooks/applypatch-msg.sample
+./.git/hooks/fsmonitor-watchman.sample
+./.git/hooks/pre-receive.sample
+./.git/hooks/prepare-commit-msg.sample
+./.git/hooks/post-update.sample
+./.git/hooks/pre-merge-commit.sample
+./.git/hooks/pre-applypatch.sample
+./.git/hooks/pre-push.sample
+./.git/hooks/update.sample
+./.git/hooks/push-to-checkout.sample
+./.git/refs
+./.git/refs/heads
+./.git/refs/heads/main
+./.git/refs/tags
+./.git/refs/remotes
+./.git/refs/remotes/origin
+./.git/refs/remotes/origin/main
+./.git/index
+./.git/COMMIT_EDITMSG
+./test.sh
+
+
+
+2.1 find where-to-look -name <specified name>
+
+
+Test Case: File with specified name exists: 
+./find_utility -w testdir -n test7
+where: testdir
+name: test7
+
+
+Test Case: File with specified name does not exist: 
+./find_utility -w testdir -n test15
+where: testdir
+name: test15
+
+
+
+2.2 find where-to-look -mmin <specified number of minutes>
+
+
+Test Case: +10 mins
+./find_utility -w testdir -m +10
+where: testdir
+mmin: +10
+testdir/dir3
+testdir/dir3/test8
+testdir/test1
+testdir/foo
+testdir/dir1
+testdir/dir1/dir2
+testdir/dir1/dir2/test6
+testdir/dir1/dir2/foo
+testdir/dir1/dir2/test5
+testdir/dir1/foo
+testdir/dir1/test4
+testdir/dir1/test3
+testdir/test2
+
+
+Test Case: -10 mins
+./find_utility -w testdir -m -10
+where: testdir
+mmin: -10
+
+
+Test Case: 10 mins
+./find_utility -w testdir -m 10
+where: testdir
+mmin: 10
+
+
+
+2.3 find where-to-look -inum <specified i-node number>
+
+
+Test Case: I-Node does not exist
+./find_utility -w testdir -i 10
+where: testdir
+inum: 10
+
+
+Test Case: I-Node exists
+./find_utility -w testdir -i 32797605
+where: testdir
+inum: 32797605
+testdir/foo
+
+
+
+3. find where-to-look criteria -delete
+
+
+Test Case: Delete file
+./find_utility -w testdir -a delete
+where: testdir
+name: test3
+action: delete
+testdir/dir1/test3
